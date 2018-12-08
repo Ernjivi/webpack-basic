@@ -3,7 +3,9 @@ class App{
   constructor(selector){
     this.el = document.querySelector(selector);
     this.list = this.el.querySelector('ul');
+    this.form = this.el.querySelector('form');
     this.init();
+    this.form.addEventListener('submit', this.saveAuthor.bind(this))
   }
 
   init(){
@@ -15,7 +17,24 @@ class App{
       });
   }
 
+  // Método para guardar el nuevo autor
+  saveAuthor(evt){
+    evt.preventDefault();
+    var inputValue = evt.target.querySelector('input').value
+    evt.target.querySelector('input').value = '';
+    fetch('http://localhost:3000/authors', {
+      method: 'POST',
+      body: JSON.stringify({name: inputValue}),
+      headers:{
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(() => this.init())
+  }
+
   render(){
+    this.list.innerHTML = '';
     this.authors.forEach(author => {
       // crear un <li>.
       var li = document.createElement('li');
